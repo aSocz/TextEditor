@@ -54,11 +54,13 @@
             // 
             this.textArea.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textArea.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textArea.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.textArea.Location = new System.Drawing.Point(0, 24);
             this.textArea.Name = "textArea";
             this.textArea.Size = new System.Drawing.Size(800, 426);
             this.textArea.TabIndex = 0;
             this.textArea.Text = "";
+            this.textArea.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textArea_KeyDown);
             // 
             // Form1
             // 
