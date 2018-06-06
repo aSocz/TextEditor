@@ -60,6 +60,7 @@
             this.textArea.Size = new System.Drawing.Size(800, 426);
             this.textArea.TabIndex = 0;
             this.textArea.Text = "";
+            this.textArea.WordWrap = false;
             this.textArea.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textArea_KeyDown);
             // 
             // Form1

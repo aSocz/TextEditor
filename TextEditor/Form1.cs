@@ -38,35 +38,67 @@ namespace TextEditor
 
         private async void textArea_KeyDown(object sender, KeyEventArgs e)
         {
-            var isSpace = e.KeyCode == Keys.Space;
-            SynchronizeWords(isSpace);
-            if (!isSpace)
+            if (e.KeyCode == Keys.Back && textArea.TextLength <= 1)
+            {
+                textArea.Clear();
+                words.Clear();
+                textArea.SelectionStart = 0;
+                SetSelectionColor(Color.Black);
+                SetSelectionUnderline(false);
+            }
+
+            if (e.KeyCode != Keys.Space)
             {
                 return;
             }
 
+            var textAreaWords = GetWords(textArea.Text);
+            if (!textAreaWords.Any())
+            {
+                return;
+            }
+
+            SynchronizeWords(textAreaWords);
             var task = ProcessWords();
-            UnderlineIncorrectWords();
+            SetWordStyle();
             await task;
         }
 
-        private void SynchronizeWords(bool isSpace)
+        private static string[] GetWords(string text)
         {
-            var textAreaWords = Regex.Split(textArea.Text, @"[(\d|\s|\W)]+");
-            if (textAreaWords.Any() && !isSpace)
-            {
-                Array.Resize(ref textAreaWords, textAreaWords.Length - 1);
-            }
+            return Regex.Split(text, @"[(\d|\s|\W)]+")
+                        .Where(w => !string.IsNullOrWhiteSpace(w))
+                        .ToArray();
+        }
 
+        private void SynchronizeWords(string[] textAreaWords)
+        {
             AppendNewWords(textAreaWords);
             RemoveOldWords(textAreaWords);
         }
 
-        private void UnderlineIncorrectWords()
+        private void SetWordStyle()
         {
-            foreach (var word in words.Where(w => !w.IsCorrect))
+            var currentPosition = textArea.SelectionStart;
+            var lastWord = GetWords(new string(textArea.Text.Take(currentPosition).ToArray())).LastOrDefault();
+            if (string.IsNullOrWhiteSpace(lastWord))
             {
-                UnderlineWord(word.Value);
+                return;
+            }
+
+            var wordObject = words.FirstOrDefault(w => w.Value.Equals(lastWord, StringComparison.OrdinalIgnoreCase));
+            if (wordObject == null)
+            {
+                return;
+            }
+
+            if (!wordObject.IsCorrect)
+            {
+                UnderlineWord(lastWord);
+            }
+            else
+            {
+                RemoveUnderline(lastWord);
             }
         }
 
@@ -109,20 +141,32 @@ namespace TextEditor
 
         private void UnderlineWord(string word)
         {
-            var startIndices = textArea.Text.GetAllIndices(word);
+            var beginningIndex = textArea.SelectionStart;
+            var startIndex = textArea.Text.LastIndexOf(word, StringComparison.OrdinalIgnoreCase);
 
-            foreach (var startIndex in startIndices)
-            {
-                textArea.SelectionStart = startIndex;
-                textArea.SelectionLength = word.Length;
-                SetSelectionColor(Color.PaleVioletRed);
-                SetSelectionUnderline(true);
-                textArea.SelectionLength = 0;
-            }
+            textArea.SelectionStart = startIndex;
+            textArea.SelectionLength = word.Length;
+            SetSelectionColor(Color.PaleVioletRed);
+            SetSelectionUnderline(true);
+            textArea.SelectionLength = 0;
 
-            textArea.SelectionStart = textArea.TextLength;
+            textArea.SelectionStart = beginningIndex;
             SetSelectionColor(Color.Black);
             SetSelectionUnderline(false);
+        }
+
+        private void RemoveUnderline(string word)
+        {
+            var beginningIndex = textArea.SelectionStart;
+            var startIndex = textArea.Text.LastIndexOf(word, StringComparison.OrdinalIgnoreCase);
+
+            textArea.SelectionStart = startIndex;
+            textArea.SelectionLength = word.Length;
+            SetSelectionColor(Color.Black);
+            SetSelectionUnderline(false);
+            textArea.SelectionLength = 0;
+
+            textArea.SelectionStart = beginningIndex;
         }
 
         private void SetSelectionColor(Color color)

@@ -35,8 +35,8 @@ namespace TextEditor
             }
 
             results = new ConcurrentBag<WordDistance>();
-            await Task.Run(() => Parallel.ForEach(wordsDictionary.Dictionaries, d => GetTopDistances(d)));
-            SuggestedWords = results.OrderBy(e => e.Distance).Select(e => e.Word).Distinct().Take(5).ToList();
+            await Task.Run(() => Parallel.ForEach(wordsDictionary.Dictionaries, GetTopDistances));
+            SuggestedWords = results.OrderBy(e => e.Distance).Select(e => e.Word).Distinct().Take(HeapCapacity).ToList();
         }
 
         private void GetTopDistances(IEnumerable<string> threadDictionary)

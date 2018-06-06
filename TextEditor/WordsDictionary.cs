@@ -9,8 +9,13 @@ namespace TextEditor
     {
         public WordsDictionary()
         {
-            var numberOfCores = Environment.ProcessorCount;
-            Dictionaries = GetDictionaries(numberOfCores);
+            var coreCount = 0;
+            foreach (var item in new System.Management.ManagementObjectSearcher("Select * from Win32_Processor").Get())
+            {
+                coreCount += int.Parse(item["NumberOfCores"].ToString());
+            }
+
+            Dictionaries = GetDictionaries(coreCount);
         }
 
         public HashSet<string>[] Dictionaries { get; }
