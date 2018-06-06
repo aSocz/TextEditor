@@ -7,10 +7,10 @@ namespace TextEditor
     {
         public static IEnumerable<int> GetAllIndices(this string source, string word)
         {
-            word = Regex.Escape(" " + word + " ");
-            foreach (Match match in Regex.Matches(source, word, RegexOptions.IgnoreCase))
+            word = "\\b" + Regex.Escape(word) + "\\b";
+            foreach (Match match in Regex.Matches(source, word, RegexOptions.IgnoreCase | RegexOptions.Singleline))
             {
-                yield return match.Index + 1;
+                yield return match.Index;
             }
         }
     }

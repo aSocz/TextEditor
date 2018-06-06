@@ -13,7 +13,7 @@ namespace TextEditor
 
         public Word(string value, WordsDictionary wordsDictionary)
         {
-            Value = value;
+            Value = value.ToLower();
             IsCorrect = wordsDictionary.Dictionaries.Any(d => d.Contains(Value));
         }
 
@@ -41,14 +41,13 @@ namespace TextEditor
 
         private void GetTopDistances(IEnumerable<string> threadDictionary)
         {
-            var value = Value.ToLower();
             var comparer = new WordDistanceComparer();
             var heap = new IntervalHeap<WordDistance>(HeapCapacity, comparer);
 
             foreach (var entry in threadDictionary)
             {
                 var threshold = heap.Any() ? heap.FindMax().Distance : int.MaxValue;
-                var distance = value.GetDistance(entry, threshold);
+                var distance = Value.GetDistance(entry, threshold);
 
                 if (heap.Count < HeapCapacity)
                 {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RTB_ToolTip;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -12,10 +13,24 @@ namespace TextEditor
     {
         private readonly List<Word> words;
         private readonly WordsDictionary wordsDictionary;
+        private readonly eDictionary tooltipDictionary;
 
         public Form1()
         {
             InitializeComponent();
+
+            tooltipDictionary = new eDictionary();
+            var tooltip = new RichTextBoxToolTip
+            {
+                RichTextBox = textArea,
+                Dictionary = tooltipDictionary,
+                TitlePrefix = "Alternatywy dla wyrazu \"",
+                TitleSuffix = "\": ",
+                TitleBrush = Brushes.DarkBlue,
+                TitleFont = new Font(textArea.SelectionFont, FontStyle.Bold),
+                DescriptionFont = new Font(textArea.SelectionFont, FontStyle.Regular),
+                DescriptionBrush = Brushes.Blue,
+            };
 
             wordsDictionary = new WordsDictionary();
             words = new List<Word>();
@@ -23,8 +38,16 @@ namespace TextEditor
 
         private async void textArea_KeyDown(object sender, KeyEventArgs e)
         {
-            SynchronizeWords(e.KeyCode == Keys.Space);
-            await ProcessWords();
+            var isSpace = e.KeyCode == Keys.Space;
+            SynchronizeWords(isSpace);
+            if (!isSpace)
+            {
+                return;
+            }
+
+            var task = ProcessWords();
+            UnderlineIncorrectWords();
+            await task;
         }
 
         private void SynchronizeWords(bool isSpace)
@@ -37,11 +60,6 @@ namespace TextEditor
 
             AppendNewWords(textAreaWords);
             RemoveOldWords(textAreaWords);
-
-            if (isSpace)
-            {
-                UnderlineIncorrectWords();
-            }
         }
 
         private void UnderlineIncorrectWords()
@@ -85,6 +103,7 @@ namespace TextEditor
                 }
 
                 await firstNotProcessedWord.Process(wordsDictionary);
+                tooltipDictionary.Add(firstNotProcessedWord.Value, string.Join("\n", firstNotProcessedWord.SuggestedWords));
             }
         }
 
@@ -96,14 +115,36 @@ namespace TextEditor
             {
                 textArea.SelectionStart = startIndex;
                 textArea.SelectionLength = word.Length;
-                textArea.SelectionColor = Color.PaleVioletRed;
-                textArea.SelectionFont = new Font(textArea.SelectionFont, FontStyle.Underline);
+                SetSelectionColor(Color.PaleVioletRed);
+                SetSelectionUnderline(true);
                 textArea.SelectionLength = 0;
             }
 
             textArea.SelectionStart = textArea.TextLength;
-            textArea.SelectionColor = Color.Black;
-            textArea.SelectionFont = new Font(textArea.SelectionFont, FontStyle.Regular);
+            SetSelectionColor(Color.Black);
+            SetSelectionUnderline(false);
+        }
+
+        private void SetSelectionColor(Color color)
+        {
+            if (textArea.SelectionColor != color)
+            {
+                textArea.SelectionColor = color;
+            }
+        }
+
+        private void SetSelectionUnderline(bool underline)
+        {
+            if (underline && !textArea.SelectionFont.Underline)
+            {
+                textArea.SelectionFont = new Font(textArea.SelectionFont, FontStyle.Underline);
+                return;
+            }
+
+            if (!underline && textArea.SelectionFont.Underline)
+            {
+                textArea.SelectionFont = new Font(textArea.SelectionFont, FontStyle.Regular);
+            }
         }
     }
 }

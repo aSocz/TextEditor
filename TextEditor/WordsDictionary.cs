@@ -18,8 +18,6 @@ namespace TextEditor
         private static HashSet<string>[] GetDictionaries(int numberOfCores)
         {
             var allWords = GetWordsList().ToList();
-            var index = allWords.FindIndex(w => w == "sie");
-            var x = allWords[index];
             var dictionaries = new HashSet<string>[numberOfCores];
 
             for (var i = 0; i < numberOfCores; i++)
@@ -34,7 +32,7 @@ namespace TextEditor
         {
             return GetResource()
                   .Split(new[] { ',', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                  .Select(s => s.Trim())
+                  .Select(s => s.ToLower().Trim())
                   .Where(s => !s.Contains(' '));
         }
 
