@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace TextEditor
@@ -12,6 +13,11 @@ namespace TextEditor
             {
                 yield return match.Index;
             }
+        }
+
+        public static string Capitalize(this string word)
+        {
+            return word.First().ToString().ToUpper() + word.Substring(1);
         }
     }
 }

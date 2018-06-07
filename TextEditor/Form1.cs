@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -47,11 +48,16 @@ namespace TextEditor
                 SetSelectionUnderline(false);
             }
 
-            if (e.KeyCode != Keys.Space)
+            if (e.KeyCode != Keys.Space && e.KeyCode != Keys.Enter)
             {
                 return;
             }
 
+            await HandleWords();
+        }
+
+        private async Task HandleWords()
+        {
             var textAreaWords = GetWords(textArea.Text);
             if (!textAreaWords.Any())
             {
@@ -136,6 +142,7 @@ namespace TextEditor
 
                 await firstNotProcessedWord.Process(wordsDictionary);
                 tooltipDictionary.Add(firstNotProcessedWord.Value, string.Join("\n", firstNotProcessedWord.SuggestedWords));
+                tooltipDictionary.Add(firstNotProcessedWord.Value.Capitalize(), string.Join("\n", firstNotProcessedWord.SuggestedWords));
             }
         }
 
@@ -188,6 +195,38 @@ namespace TextEditor
             if (!underline && textArea.SelectionFont.Underline)
             {
                 textArea.SelectionFont = new Font(textArea.SelectionFont, FontStyle.Regular);
+            }
+        }
+
+        private async void wczytajToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var dialog = new OpenFileDialog { Filter = "Text|*.txt" };
+            if (dialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            using (var reader = new StreamReader(dialog.OpenFile()))
+            {
+                var text = await reader.ReadToEndAsync();
+                textArea.Text = text;
+            }
+
+            await HandleWords();
+        }
+
+        private async void zapiszToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var dialog = new SaveFileDialog { Filter = "Text|*.txt" };
+
+            if (dialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            using (var writer = new StreamWriter(dialog.FileName))
+            {
+                await writer.WriteAsync(textArea.Text);
             }
         }
     }

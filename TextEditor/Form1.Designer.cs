@@ -29,26 +29,22 @@
         private void InitializeComponent()
         {
             this.menuStrip = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textArea = new System.Windows.Forms.RichTextBox();
+            this.plikToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wczytajToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.zapiszToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.plikToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(800, 24);
             this.menuStrip.TabIndex = 1;
             this.menuStrip.Text = "menuStrip1";
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
             // 
             // textArea
             // 
@@ -62,6 +58,29 @@
             this.textArea.Text = "";
             this.textArea.WordWrap = false;
             this.textArea.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textArea_KeyDown);
+            // 
+            // plikToolStripMenuItem
+            // 
+            this.plikToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.wczytajToolStripMenuItem,
+            this.zapiszToolStripMenuItem});
+            this.plikToolStripMenuItem.Name = "plikToolStripMenuItem";
+            this.plikToolStripMenuItem.Size = new System.Drawing.Size(38, 20);
+            this.plikToolStripMenuItem.Text = "Plik";
+            // 
+            // wczytajToolStripMenuItem
+            // 
+            this.wczytajToolStripMenuItem.Name = "wczytajToolStripMenuItem";
+            this.wczytajToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.wczytajToolStripMenuItem.Text = "Wczytaj";
+            this.wczytajToolStripMenuItem.Click += new System.EventHandler(this.wczytajToolStripMenuItem_Click);
+            // 
+            // zapiszToolStripMenuItem
+            // 
+            this.zapiszToolStripMenuItem.Name = "zapiszToolStripMenuItem";
+            this.zapiszToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.zapiszToolStripMenuItem.Text = "Zapisz";
+            this.zapiszToolStripMenuItem.Click += new System.EventHandler(this.zapiszToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -83,8 +102,10 @@
         #endregion
 
         private System.Windows.Forms.MenuStrip menuStrip;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.RichTextBox textArea;
+        private System.Windows.Forms.ToolStripMenuItem plikToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem wczytajToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem zapiszToolStripMenuItem;
     }
 }
 
